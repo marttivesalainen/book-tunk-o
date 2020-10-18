@@ -71,6 +71,30 @@ function App() {
 
             return [...existingBooksRef, newBookRef];
           },
+
+          randomBooks(existingBooksRef = [], { readField }) {
+            const newBookRef = cache.writeFragment({
+              data: data.addBook,
+              fragment: gql`
+                fragment NewBook on Book {
+                  id
+                  title
+                }
+              `,
+            });
+
+            // Quick safety check - if the new comment is already
+            // present in the cache, we don't need to add it again.
+            if (
+              existingBooksRef.some(
+                (ref) => readField("id", ref) === newBookRef.id
+              )
+            ) {
+              return newBookRef;
+            }
+
+            return [...existingBooksRef, newBookRef];
+          },
         },
       });
     },
